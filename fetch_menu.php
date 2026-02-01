@@ -143,7 +143,7 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
                         본 메일은 PC환경과, 일부 모바일 디바이스의 제약으로 주간 식단표를 확인하기 사우분들을 위한 비공식 메일링입니다.
                     </p>
                     <p style='margin: 0 0 12px 0; font-size: 10px;'>
-                        문제 발생 및 메일링 수신을 원치 않으시면 <strong>임광현 선임</strong> 으로 연락 부탁드립니다.
+                        문제 발생 및 메일링 수신을 원하시면 <strong>geniusk.studio@gmail.com</strong> 으로 연락 부탁드립니다.
                     </p>
                     <hr style='border: none; border-top: 1px solid #ddd; margin: 10px 0;'>
                     <p style='margin: 0 0 5px 0; font-size: 10px;'>
