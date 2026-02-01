@@ -20,6 +20,10 @@ function loadStats() {
 }
 
 $stats = loadStats();
+
+// 환경변수에서 수신자 목록 읽기
+$recipientsEnv = getenv('RECIPIENTS');
+$recipients = $recipientsEnv ? explode(',', $recipientsEnv) : [];
 $recipientCount = count($recipients);
 
 // 마지막 발송 URL
