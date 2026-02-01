@@ -185,7 +185,7 @@ function extractMenuTitle($imageUrl) {
         $month = substr($dateStr, 4, 2);
         $day = substr($dateStr, 6, 2);
         
-        return "주간메뉴표({$month}/{$day}주차)";
+        return "주간메뉴표({$month}/{$day}기준)";
     }
     
     // 날짜를 찾지 못하면 기본 제목
