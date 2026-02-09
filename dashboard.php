@@ -191,6 +191,45 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         .btn-manual:active {
             transform: translateY(0);
         }
+        .btn-test {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px auto;
+            display: block;
+            width: fit-content;
+        }
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+        }
+        .btn-test:active {
+            transform: translateY(0);
+        }
+        .password-box {
+            text-align: center;
+            margin: 20px auto;
+        }
+        .password-input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 200px;
+            margin: 10px;
+        }
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
         .menu-info {
             background: #f0f4ff;
             border-left: 4px solid #667eea;
@@ -222,6 +261,42 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
                     alert('오류가 발생했습니다: ' + error);
                     btn.disabled = false;
                     btn.textContent = '🔄 지금 바로 확인하기';
+                });
+        }
+        
+        function testSend() {
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!password) {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            const btn = document.getElementById('testBtn');
+            btn.disabled = true;
+            btn.textContent = '발송 중...';
+            
+            const formData = new FormData();
+            formData.append('password', password);
+            
+            fetch('test_send.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ 테스트 메일 발송 성공!\n\n메뉴: ' + data.menu_title + '\n수신자: ' + data.recipients + '명\n시간: ' + data.time);
+                    } else {
+                        alert('❌ 발송 실패: ' + data.message);
+                    }
+                    btn.disabled = false;
+                    btn.textContent = '📧 테스트 메일 발송';
+                })
+                .catch(error => {
+                    alert('오류가 발생했습니다: ' + error);
+                    btn.disabled = false;
+                    btn.textContent = '📧 테스트 메일 발송';
                 });
         }
     </script>
@@ -313,6 +388,23 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         <button id="manualBtn" class="btn-manual" onclick="manualCheck()">
             🔄 지금 바로 확인하기
         </button>
+
+        <div class="password-box">
+            <h3 style="color: #666; font-size: 14px; margin-bottom: 10px;">🔒 관리자 전용 - 테스트 메일 발송</h3>
+            <input 
+                type="password" 
+                id="adminPassword" 
+                class="password-input" 
+                placeholder="비밀번호 입력"
+                onkeypress="if(event.key==='Enter') testSend()"
+            >
+            <button id="testBtn" class="btn-test" onclick="testSend()">
+                📧 테스트 메일 발송
+            </button>
+            <p style="font-size: 11px; color: #999; margin-top: 5px;">
+                * 현재 최신 식단표를 즉시 발송합니다 (중복 체크 무시)
+            </p>
+        </div>
 
         <div class="info-box">
             ℹ️ 이 시스템은 1시간마다 자동으로 CJ 프레시밀 홈페이지를 확인하며, 새로운 주간 식단표가 등록되면 자동으로 메일을 발송합니다.
