@@ -13,10 +13,24 @@ function loadStats() {
         return [
             'total_sent' => 0,
             'last_sent_time' => null,
-            'last_checked_time' => null
+            'last_checked_time' => null,
+            'last_menu_title' => null,
+            'last_menu_url' => null,
+            'last_menu_acquired_time' => null
         ];
     }
-    return json_decode(file_get_contents(STATS_FILE), true);
+    $data = json_decode(file_get_contents(STATS_FILE), true);
+    if (!$data) {
+        return [
+            'total_sent' => 0,
+            'last_sent_time' => null,
+            'last_checked_time' => null,
+            'last_menu_title' => null,
+            'last_menu_url' => null,
+            'last_menu_acquired_time' => null
+        ];
+    }
+    return $data;
 }
 
 $stats = loadStats();
@@ -154,7 +168,63 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         .running {
             animation: pulse 2s infinite;
         }
+        .btn-manual {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 20px auto;
+            display: block;
+            width: fit-content;
+        }
+        .btn-manual:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-manual:active {
+            transform: translateY(0);
+        }
+        .menu-info {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin: 20px 30px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .menu-info strong {
+            color: #667eea;
+        }
     </style>
+    <script>
+        function manualCheck() {
+            const btn = document.getElementById('manualBtn');
+            btn.disabled = true;
+            btn.textContent = '확인 중...';
+            
+            fetch('trigger.php')
+                .then(response => response.json())
+                .then(data => {
+                    alert('식단표 확인을 시작했습니다!\n잠시 후 페이지를 새로고침 해주세요.');
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.textContent = '🔄 지금 바로 확인하기';
+                    }, 3000);
+                })
+                .catch(error => {
+                    alert('오류가 발생했습니다: ' + error);
+                    btn.disabled = false;
+                    btn.textContent = '🔄 지금 바로 확인하기';
+                });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -230,6 +300,19 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
                 </div>
             </div>
         </div>
+
+        <?php if ($stats['last_menu_title']): ?>
+        <div class="menu-info">
+            <strong>📋 최근 발송 메뉴:</strong><br>
+            • 메뉴명: <?php echo htmlspecialchars($stats['last_menu_title']); ?><br>
+            • 획득 시간: <?php echo $stats['last_menu_acquired_time'] ? date('Y-m-d H:i:s', $stats['last_menu_acquired_time']) : '정보 없음'; ?><br>
+            • 이미지 URL: <a href="<?php echo htmlspecialchars($stats['last_menu_url']); ?>" target="_blank" style="color: #667eea;">보기</a>
+        </div>
+        <?php endif; ?>
+
+        <button id="manualBtn" class="btn-manual" onclick="manualCheck()">
+            🔄 지금 바로 확인하기
+        </button>
 
         <div class="info-box">
             ℹ️ 이 시스템은 1시간마다 자동으로 CJ 프레시밀 홈페이지를 확인하며, 새로운 주간 식단표가 등록되면 자동으로 메일을 발송합니다.

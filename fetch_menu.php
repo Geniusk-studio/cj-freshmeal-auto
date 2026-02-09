@@ -140,10 +140,10 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
                 <div style='color: #999; font-size: 11px; line-height: 1.6; padding: 15px; background-color: #f9f9f9; border-radius: 4px;'>
                     <p style='margin: 0 0 8px 0; text-align: center; font-weight: bold;'>CJ 프레시밀 주간 메뉴표 자동 알림 서비스</p>
                     <p style='margin: 0 0 8px 0; font-size: 10px;'>
-                        본 메일은 PC환경과, 일부 모바일 디바이스의 제약으로 주간 식단표를 확인하기 사우분들을 위한 비공식 메일링입니다.
+                        본 메일은 PC환경과, 일부 모바일 디바이스의 제약으로 주간 식단표를 확인하기 어려운 분들을 위한 비공식 메일링입니다.
                     </p>
                     <p style='margin: 0 0 12px 0; font-size: 10px;'>
-                        문제 발생 및 메일링 수신을 원하시면 <strong>geniusk.studio@gmail.com</strong> 으로 연락 부탁드립니다.
+                        문제 발생 및 메일링 수신을 원치 않으시면 <strong>geniusk.studio@gmail.com</strong> 으로 연락 부탁드립니다.
                     </p>
                     <hr style='border: none; border-top: 1px solid #ddd; margin: 10px 0;'>
                     <p style='margin: 0 0 5px 0; font-size: 10px;'>
@@ -185,7 +185,7 @@ function extractMenuTitle($imageUrl) {
         $month = substr($dateStr, 4, 2);
         $day = substr($dateStr, 6, 2);
         
-        return "주간메뉴표({$month}/{$day}기준)";
+        return "주간메뉴표({$month}/{$day}주차)";
     }
     
     // 날짜를 찾지 못하면 기본 제목
@@ -195,26 +195,35 @@ function extractMenuTitle($imageUrl) {
 /**
  * 통계 데이터 업데이트
  */
-function updateStats($sent = false) {
+function updateStats($sent = false, $menuInfo = null) {
     $statsFile = __DIR__ . '/stats.json';
     $stats = [
         'total_sent' => 0,
         'last_sent_time' => null,
-        'last_checked_time' => time()
+        'last_checked_time' => time(),
+        'last_menu_title' => null,
+        'last_menu_url' => null,
+        'last_menu_acquired_time' => null
     ];
     
     if (file_exists($statsFile)) {
-        $stats = json_decode(file_get_contents($statsFile), true);
+        $existingStats = json_decode(file_get_contents($statsFile), true);
+        if ($existingStats) {
+            $stats = array_merge($stats, $existingStats);
+        }
     }
     
     $stats['last_checked_time'] = time();
     
-    if ($sent) {
+    if ($sent && $menuInfo) {
         $stats['total_sent']++;
         $stats['last_sent_time'] = time();
+        $stats['last_menu_title'] = $menuInfo['title'];
+        $stats['last_menu_url'] = $menuInfo['url'];
+        $stats['last_menu_acquired_time'] = time();
     }
     
-    file_put_contents($statsFile, json_encode($stats));
+    file_put_contents($statsFile, json_encode($stats, JSON_PRETTY_PRINT));
 }
 
 /**
@@ -257,7 +266,10 @@ function main() {
         saveLastSentUrl($imageUrl);
         
         // 7. 통계 업데이트 (발송 성공)
-        updateStats(true);
+        updateStats(true, [
+            'title' => $menuTitle,
+            'url' => $imageUrl
+        ]);
         
         // 8. 임시 파일 삭제
         unlink($imageFile['path']);
