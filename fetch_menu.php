@@ -140,7 +140,7 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
                 <div style='color: #999; font-size: 11px; line-height: 1.6; padding: 15px; background-color: #f9f9f9; border-radius: 4px;'>
                     <p style='margin: 0 0 8px 0; text-align: center; font-weight: bold;'>CJ 프레시밀 주간 메뉴표 자동 알림 서비스</p>
                     <p style='margin: 0 0 8px 0; font-size: 10px;'>
-                        본 메일은 PC환경과, 일부 모바일 디바이스의 제약으로 주간 식단표를 확인하기 어려운 분들을 위한 비공식 메일링입니다.
+                        본 메일은 PC환경과, 일부 모바일 디바이스의 제약으로 주간 식단표를 확인하기 사우분들을 위한 비공식 메일링입니다.
                     </p>
                     <p style='margin: 0 0 12px 0; font-size: 10px;'>
                         문제 발생 및 메일링 수신을 원치 않으시면 <strong>geniusk.studio@gmail.com</strong> 으로 연락 부탁드립니다.
