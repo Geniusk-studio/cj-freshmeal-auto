@@ -385,6 +385,25 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         </div>
         <?php endif; ?>
 
+        <!-- 최근 확인된 메뉴표 강조 -->
+        <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 12px; margin: 20px 30px; border: 2px solid #0ea5e9;">
+            <div style="font-size: 13px; color: #0369a1; margin-bottom: 8px;">📌 최근 확인된 메뉴표</div>
+            <div style="font-size: 20px; font-weight: bold; color: #0c4a6e;">
+                <?php 
+                if ($stats['last_menu_title']) {
+                    echo htmlspecialchars($stats['last_menu_title']);
+                } else {
+                    echo '확인 대기 중';
+                }
+                ?>
+            </div>
+            <?php if ($stats['last_menu_acquired_time']): ?>
+            <div style="font-size: 12px; color: #0369a1; margin-top: 5px;">
+                마지막 확인: <?php echo date('Y-m-d H:i', $stats['last_menu_acquired_time']); ?>
+            </div>
+            <?php endif; ?>
+        </div>
+
         <button id="manualBtn" class="btn-manual" onclick="manualCheck()">
             🔄 지금 바로 확인하기
         </button>
