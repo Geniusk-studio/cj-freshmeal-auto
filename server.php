@@ -41,57 +41,18 @@ if (strpos($path, 'test_send') !== false && $_SERVER['REQUEST_METHOD'] === 'POST
         exit;
     }
     
-    // 실제 발송 로직
-    try {
-        require_once __DIR__ . '/config.php';
-        
-        use PHPMailer\PHPMailer\PHPMailer;
-        use PHPMailer\PHPMailer\Exception;
-        require __DIR__ . '/vendor/autoload.php';
-        
-        // fetch_menu.php 함수들 로드
-        $fetchContent = file_get_contents(__DIR__ . '/fetch_menu.php');
-        // main() 함수 호출 부분 제거
-        $fetchContent = preg_replace('/^main\(\);/m', '', $fetchContent);
-        eval('?>' . $fetchContent);
-        
-        // API에서 데이터 가져오기
-        $menuData = fetchMenuData();
-        $imageUrl = $menuData['data']['weeklyMenuUrl'];
-        
-        // 이미지 다운로드
-        $imageFile = downloadImage($imageUrl);
-        
-        // 메뉴 제목 생성
-        $menuTitle = extractMenuTitle($imageUrl);
-        
-        // 메일 발송
-        sendEmail($recipients, $imageFile, $menuTitle);
-        
-        // 통계 업데이트
-        updateStats(true, [
-            'title' => $menuTitle,
-            'url' => $imageUrl
-        ]);
-        
-        // 임시 파일 삭제
-        if (file_exists($imageFile['path'])) {
-            unlink($imageFile['path']);
-        }
-        
+    // 백그라운드에서 fetch_menu.php 실행
+    if (function_exists('exec')) {
+        exec('php ' . __DIR__ . '/fetch_menu.php > /tmp/test_send.log 2>&1 &');
         echo json_encode([
             'success' => true,
-            'message' => '테스트 메일이 성공적으로 발송되었습니다!',
-            'menu_title' => $menuTitle,
-            'recipients' => count($recipients),
+            'message' => '테스트 메일 발송을 시작했습니다! 잠시 후 메일을 확인해주세요.',
             'time' => date('Y-m-d H:i:s')
         ]);
-        
-    } catch (Exception $e) {
+    } else {
         echo json_encode([
             'success' => false,
-            'message' => '발송 실패: ' . $e->getMessage(),
-            'time' => date('Y-m-d H:i:s')
+            'message' => 'exec 함수를 사용할 수 없습니다.'
         ]);
     }
     exit;
