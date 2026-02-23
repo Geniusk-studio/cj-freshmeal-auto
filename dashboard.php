@@ -214,7 +214,7 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         .btn-test:active {
             transform: translateY(0);
         }
-        .btn-log {
+        .btn-admin {
             display: inline-block;
             padding: 12px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -226,11 +226,11 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        .btn-log:hover {
+        .btn-admin:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
-        .btn-log:active {
+        .btn-admin:active {
             transform: translateY(0);
         }
         .password-box {
@@ -305,40 +305,22 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('✅ 테스트 메일 발송 성공!\n\n메뉴: ' + data.menu_title + '\n수신자: ' + data.recipients + '명\n시간: ' + data.time);
+                        alert('✅ 메일 발송 성공!\n\n메뉴: ' + data.menu_title + '\n수신자: ' + data.recipients + '명\n시간: ' + data.time);
                     } else {
                         alert('❌ 발송 실패: ' + data.message);
                     }
                     btn.disabled = false;
-                    btn.textContent = '📧 테스트 메일 발송';
+                    btn.textContent = '📧 직접 발송';
                 })
                 .catch(error => {
                     alert('오류가 발생했습니다: ' + error);
                     btn.disabled = false;
-                    btn.textContent = '📧 테스트 메일 발송';
+                    btn.textContent = '📧 직접 발송';
                 });
         }
         
-        function openLogs() {
-            const password = document.getElementById('adminPassword').value;
-            
-            if (!password) {
-                alert('비밀번호를 입력해주세요.');
-                return;
-            }
-            
-            window.open('/logs?password=' + encodeURIComponent(password), '_blank');
-        }
-        
-        function openSmtpTest() {
-            const password = document.getElementById('adminPassword').value;
-            
-            if (!password) {
-                alert('비밀번호를 입력해주세요.');
-                return;
-            }
-            
-            window.open('/smtp_test?password=' + encodeURIComponent(password), '_blank');
+        function openAdminPanel() {
+            window.open('/admin', '_blank');
         }
     </script>
 </head>
@@ -460,13 +442,10 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
             >
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button id="testBtn" class="btn-test" onclick="testSend()">
-                    📧 테스트 메일 발송
+                    📧 직접 발송
                 </button>
-                <button class="btn-log" onclick="openLogs()">
-                    📋 LOG 확인
-                </button>
-                <button class="btn-log" onclick="openSmtpTest()">
-                    🔧 SMTP TEST
+                <button class="btn-admin" onclick="openAdminPanel()">
+                    🔧 관리자 확인
                 </button>
             </div>
             <p style="font-size: 11px; color: #999; margin-top: 5px;">
