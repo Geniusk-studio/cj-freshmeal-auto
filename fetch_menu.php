@@ -155,7 +155,7 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
                         본 메일은 PC환경과, 일부 모바일 디바이스의 제약으로 주간 식단표를 확인하기 어려운 분들을 위한 비공식 메일링입니다.
                     </p>
                     <p style='margin: 0 0 12px 0; font-size: 10px;'>
-                        문제 발생 및 메일링 수신을 원하거나,원치 않으시면 <strong>geniusk.studio@gmail.com</strong> 으로 연락 부탁드립니다.
+                        문제 발생 및 메일링 수신을 원하시거나,원치 않으시면 <strong>geniusk.studio@gmail.com</strong> 으로 연락 부탁드립니다.
                     </p>
                     <hr style='border: none; border-top: 1px solid #ddd; margin: 10px 0;'>
                     <p style='margin: 0 0 5px 0; font-size: 10px;'>
@@ -253,6 +253,20 @@ function updateStats($sent = false, $menuInfo = null) {
 function main() {
     global $recipients;
     
+    // 락 파일로 동시 실행 방지
+    $lockFile = __DIR__ . '/fetch.lock';
+    
+    if (file_exists($lockFile)) {
+        $lockTime = filemtime($lockFile);
+        if (time() - $lockTime < 600) { // 10분 이내 실행 방지
+            echo "⚠️ 최근에 실행되었습니다. 10분 후 다시 시도하세요.\n";
+            return;
+        }
+    }
+    
+    // 락 파일 생성
+    file_put_contents($lockFile, date('Y-m-d H:i:s'));
+    
     echo "[" . date('Y-m-d H:i:s') . "] 식단표 확인 시작...\n";
     
     // 체크 시간 기록
@@ -301,6 +315,12 @@ function main() {
         echo "제목: " . $menuTitle . "\n";
         echo "수신자: " . implode(', ', $recipients) . "\n";
         
+        // 락 파일 삭제
+        $lockFile = __DIR__ . '/fetch.lock';
+        if (file_exists($lockFile)) {
+            unlink($lockFile);
+        }
+        
     } catch (Exception $e) {
         echo "✗ 오류 발생: " . $e->getMessage() . "\n";
         // 오류 로그 파일에 기록
@@ -308,6 +328,12 @@ function main() {
             "[" . date('Y-m-d H:i:s') . "] " . $e->getMessage() . "\n", 
             FILE_APPEND
         );
+        
+        // 락 파일 삭제
+        $lockFile = __DIR__ . '/fetch.lock';
+        if (file_exists($lockFile)) {
+            unlink($lockFile);
+        }
     }
     
     echo "\n";
