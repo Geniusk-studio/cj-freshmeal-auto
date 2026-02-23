@@ -20,6 +20,7 @@ echo "<hr>";
 
 // 로그 파일 목록
 $logFiles = [
+    'trigger.log' => '지금 바로 확인하기 로그',
     'test_send.log' => '테스트 발송 로그',
     'fetch_manual.log' => '수동 실행 로그',
     'stats.json' => '통계 데이터',
