@@ -214,6 +214,25 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         .btn-test:active {
             transform: translateY(0);
         }
+        .btn-log {
+            display: inline-block;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-log:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-log:active {
+            transform: translateY(0);
+        }
         .password-box {
             text-align: center;
             margin: 20px auto;
@@ -298,6 +317,28 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
                     btn.disabled = false;
                     btn.textContent = '📧 테스트 메일 발송';
                 });
+        }
+        
+        function openLogs() {
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!password) {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            window.open('/logs?password=' + encodeURIComponent(password), '_blank');
+        }
+        
+        function openSmtpTest() {
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!password) {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
+            
+            window.open('/smtp_test?password=' + encodeURIComponent(password), '_blank');
         }
     </script>
 </head>
@@ -409,7 +450,7 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
         </button>
 
         <div class="password-box">
-            <h3 style="color: #666; font-size: 14px; margin-bottom: 10px;">🔒 관리자 전용 - 테스트 메일 발송</h3>
+            <h3 style="color: #666; font-size: 14px; margin-bottom: 10px;">🔒 관리자 전용</h3>
             <input 
                 type="password" 
                 id="adminPassword" 
@@ -417,9 +458,17 @@ $isRunning = true; // 이 페이지가 로드되면 실행 중
                 placeholder="비밀번호 입력"
                 onkeypress="if(event.key==='Enter') testSend()"
             >
-            <button id="testBtn" class="btn-test" onclick="testSend()">
-                📧 테스트 메일 발송
-            </button>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button id="testBtn" class="btn-test" onclick="testSend()">
+                    📧 테스트 메일 발송
+                </button>
+                <button class="btn-log" onclick="openLogs()">
+                    📋 LOG 확인
+                </button>
+                <button class="btn-log" onclick="openSmtpTest()">
+                    🔧 SMTP TEST
+                </button>
+            </div>
             <p style="font-size: 11px; color: #999; margin-top: 5px;">
                 * 현재 최신 식단표를 즉시 발송합니다 (중복 체크 무시)
             </p>
