@@ -15,6 +15,12 @@ $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
 
 // 라우팅
+if (strpos($path, 'admin') !== false && strpos($path, 'smtp_test') === false) {
+    // 관리자 패널
+    require __DIR__ . '/admin.php';
+    exit;
+}
+
 if (strpos($path, 'smtp_test') !== false) {
     // SMTP 테스트
     require __DIR__ . '/smtp_test.php';
