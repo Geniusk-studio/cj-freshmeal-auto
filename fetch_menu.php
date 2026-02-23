@@ -94,6 +94,10 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
     $mail = new PHPMailer(true);
     
     try {
+        echo "=== 메일 발송 시작 ===\n";
+        echo "수신자 수: " . count($recipients) . "\n";
+        echo "수신자 목록: " . implode(', ', $recipients) . "\n";
+        
         // SMTP 설정
         $mail->isSMTP();
         $mail->Host = SMTP_HOST;
@@ -103,6 +107,13 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = SMTP_PORT;
         $mail->CharSet = 'UTF-8';
+        $mail->SMTPDebug = 2; // 디버그 모드
+        
+        echo "SMTP 설정 완료\n";
+        echo "Host: " . SMTP_HOST . "\n";
+        echo "Port: " . SMTP_PORT . "\n";
+        echo "Username: " . SMTP_USERNAME . "\n";
+        echo "From: " . FROM_EMAIL . "\n";
         
         // 발신자
         $mail->setFrom(FROM_EMAIL, FROM_NAME);
@@ -110,6 +121,7 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
         // 수신자를 BCC로 추가 (비공개 발송)
         foreach ($recipients as $recipient) {
             $mail->addBCC(trim($recipient));
+            echo "BCC 추가: " . trim($recipient) . "\n";
         }
         
         // 이미지를 인라인으로 첨부 (CID 방식)
@@ -163,10 +175,19 @@ function sendEmail($recipients, $imageFile, $menuTitle) {
         
         $mail->AltBody = $menuTitle . "\n\n점포: " . STORE_NAME . "\n발송일시: " . date('Y-m-d H:i:s') . "\n\n※ 이 메일은 HTML을 지원하는 메일 클라이언트에서 확인하세요.";
         
+        echo "메일 내용 설정 완료\n";
+        echo "제목: " . $mail->Subject . "\n";
+        echo "이미지 파일: " . $imageFile['path'] . "\n";
+        
+        echo "SMTP 연결 시도...\n";
         $mail->send();
+        echo "✓ 메일 발송 성공!\n";
         return true;
         
     } catch (Exception $e) {
+        echo "✗ 메일 발송 실패!\n";
+        echo "에러: " . $mail->ErrorInfo . "\n";
+        echo "Exception: " . $e->getMessage() . "\n";
         throw new Exception("메일 발송 실패: " . $mail->ErrorInfo);
     }
 }
