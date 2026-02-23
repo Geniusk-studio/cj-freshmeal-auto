@@ -24,11 +24,29 @@ if (strpos($path, 'logs') !== false) {
 if (strpos($path, 'trigger') !== false) {
     // 트리거 요청
     header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'started',
-        'message' => '식단표 확인을 시작합니다...',
-        'time' => date('Y-m-d H:i:s')
-    ]);
+    
+    // 로그 파일에 기록
+    $logFile = __DIR__ . '/trigger.log';
+    file_put_contents($logFile, "\n=== " . date('Y-m-d H:i:s') . " - 지금 바로 확인하기 클릭 ===\n", FILE_APPEND);
+    
+    if (function_exists('exec')) {
+        $cmd = 'php ' . __DIR__ . '/fetch_menu.php >> ' . __DIR__ . '/trigger.log 2>&1 &';
+        file_put_contents($logFile, "실행 명령: " . $cmd . "\n", FILE_APPEND);
+        exec($cmd);
+        
+        echo json_encode([
+            'status' => 'started',
+            'message' => '식단표 확인을 시작합니다...',
+            'time' => date('Y-m-d H:i:s')
+        ]);
+    } else {
+        file_put_contents($logFile, "exec 함수 사용 불가\n", FILE_APPEND);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'exec 함수를 사용할 수 없습니다.',
+            'time' => date('Y-m-d H:i:s')
+        ]);
+    }
     exit;
 }
 
