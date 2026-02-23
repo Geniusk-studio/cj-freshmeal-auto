@@ -15,6 +15,12 @@ $uri = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
 
 // 라우팅
+if (strpos($path, 'smtp_test') !== false) {
+    // SMTP 테스트
+    require __DIR__ . '/smtp_test.php';
+    exit;
+}
+
 if (strpos($path, 'logs') !== false) {
     // 로그 확인 페이지
     require __DIR__ . '/logs.php';
